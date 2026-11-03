@@ -28,3 +28,13 @@ npm run dev
 - Halaman dan API penjual hanya bisa dipakai setelah login (cookie httpOnly bertanda tangan, berlaku 7 hari).
 - Harga dan stok selalu dihitung ulang di server; pembeli tidak bisa mengubah harga.
 - Pembayaran dikonfirmasi manual oleh penjual (cocokkan dengan mutasi rekening).
+
+## Link pembeli dan penjual terpisah (opsional)
+Header toko tidak lagi menampilkan tombol penjual. Penjual membuka `alamat-situs/admin` langsung (simpan sebagai bookmark).
+Untuk memisahkan alamat sepenuhnya, buat dua proyek Vercel dari repo yang sama dengan variabel yang sama, lalu tambahkan:
+- proyek pembeli: `SITE_MODE` = `buyer` (halaman /admin tidak bisa dibuka)
+- proyek penjual: `SITE_MODE` = `seller` (halaman awal langsung ke /admin; hubungkan juga Blob store yang sama)
+
+## Struk pembayaran
+- Pembeli: setelah menekan "Saya Sudah Transfer", struk tampil dan bisa dicetak atau disimpan sebagai PDF (status: Menunggu Konfirmasi).
+- Penjual: tiap pesanan punya tombol "Cetak Struk"; setelah "Tandai Lunas" ada tawaran cetak struk berstatus LUNAS. Ukuran struk 80 mm (printer thermal) dan juga bisa dicetak di kertas biasa.

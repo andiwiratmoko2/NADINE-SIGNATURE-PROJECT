@@ -1,7 +1,8 @@
 'use client';
 import {useState,useEffect} from 'react';
 import Link from 'next/link';
-import {useRouter} from 'next/navigation';
+import {useRouter,usePathname} from 'next/navigation';
+import {StrukCard} from '@/components/receipt';
 import {rp,sizes,swBg} from '@/lib/data';
 
 const getCart=()=>{try{return JSON.parse(localStorage.getItem('ns_cart')||'[]')}catch{return[]}};
@@ -10,13 +11,13 @@ const Mono=({w})=>(<svg viewBox="0 0 40 40" style={{width:w}}><circle cx="20" cy
 export const Pic=({p,k=0})=>p.images?.[k]?<img src={p.images[k]} alt={p.name}/>:<svg className="ph" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18"/><path d="M12.5 28.5V11.5l15 17v-17"/></svg>;
 
 export function Header(){
-  const [n,setN]=useState(0);
+  const [n,setN]=useState(0),path=usePathname()||'';
   useEffect(()=>{const f=()=>setN(getCart().reduce((s,c)=>s+c.q,0));f();window.addEventListener('cart',f);return()=>window.removeEventListener('cart',f)},[]);
+  if(path.startsWith('/admin'))return(<header><div className="brand"><Mono w={38}/><div><b>Nadine</b><i>SIGNATURE</i></div></div></header>);
   return(<header>
     <Link href="/" className="brand"><Mono w={38}/><div><b>Nadine</b><i>SIGNATURE</i></div></Link>
     <form action="/" className="search"><input name="q" placeholder="Cari produk pilihan…"/></form>
     <Link href="/keranjang" className="ic">KERANJANG <em>{n}</em></Link>
-    <Link href="/admin" className="ic adm">PENJUAL</Link>
   </header>);
 }
 
@@ -100,6 +101,17 @@ export function CartView(){
 
 function Bank({bank}){return(<div className="box"><b>Transfer ke Rekening</b><br/>{bank.bank} · <b style={{letterSpacing:'.08em'}}>{bank.no}</b><br/>a.n. {bank.an}</div>)}
 
+export function Thanks({done,it,f,bank}){
+  const o={code:done.code,total:done.total,status:'Menunggu Konfirmasi',name:f.name,phone:f.phone,address:f.address,items:it,date:done.date};
+  return(<div className="wrap" style={{maxWidth:560,padding:'40px 5vw 60px'}}>
+    <h1 className="t" style={{marginBottom:12}}>Terima kasih</h1>
+    <p className="desc" style={{marginBottom:16}}>Pesanan <b>{done.code}</b> sudah kami terima. Transfer sebesar <b>{rp(done.total)}</b> ke rekening di bawah. Penjual akan memeriksa pembayaran dan menghubungi Anda lewat WhatsApp.</p>
+    <Bank bank={bank}/>
+    <StrukCard o={o} bank={bank}/>
+    <p className="desc" style={{fontSize:12}}>Cetak struk ini atau simpan sebagai PDF lewat jendela cetak. Struk berstatus LUNAS dapat diminta dari penjual setelah pembayaran dikonfirmasi.</p>
+    <Link href="/" className="b1">Kembali Belanja</Link></div>);
+}
+
 export function PayView({bank}){
   const [it,setIt]=useState(null),[f,setF]=useState({name:'',phone:'',address:''}),[err,setErr]=useState(''),[done,setDone]=useState(null),[busy,setBusy]=useState(false);
   useEffect(()=>setIt(getCart().filter(x=>x.sel)),[]);
@@ -111,14 +123,11 @@ export function PayView({bank}){
       const r=await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...f,items:it.map(x=>({id:x.id,q:x.q,s:x.s,c:x.c}))})});
       const d=await r.json();
       if(!r.ok)setErr(d.error||'Gagal membuat pesanan.');
-      else{setCart(getCart().filter(x=>!x.sel));setDone(d)}
+      else{setCart(getCart().filter(x=>!x.sel));setDone({...d,date:new Date().toISOString()})}
     }catch{setErr('Koneksi bermasalah, coba lagi.')}
     setBusy(false);
   }
-  if(done)return(<div className="wrap" style={{maxWidth:560,padding:'40px 5vw 60px'}}>
-    <h1 className="t" style={{marginBottom:12}}>Terima kasih</h1>
-    <p className="desc" style={{marginBottom:16}}>Pesanan <b>{done.code}</b> sudah kami terima. Transfer sebesar <b>{rp(done.total)}</b> ke rekening di bawah. Penjual akan memeriksa pembayaran dan menghubungi Anda lewat WhatsApp.</p>
-    <Bank bank={bank}/><Link href="/" className="b1">Kembali Belanja</Link></div>);
+  if(done)return <Thanks done={done} it={it} f={f} bank={bank}/>;
   if(!it.length)return <div className="wrap"><p className="empty">Tidak ada barang yang dipilih. <Link href="/keranjang"><u>Kembali ke keranjang</u></Link></p></div>;
   return(<div className="wrap"><div className="crumb"><Link href="/keranjang">Keranjang</Link> › Pembayaran</div>
     <div className="cart"><div>

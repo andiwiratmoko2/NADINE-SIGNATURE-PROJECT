@@ -59,3 +59,16 @@ h1.t{font-family:var(--serif);font-weight:600;font-size:clamp(34px,4.2vw,50px);l
 footer{text-align:center;color:var(--mut);font-size:12px;padding:30px 5vw 50px;border-top:1px solid var(--line)}
 @media(max-width:1000px){.pd{grid-template-columns:1fr 1fr}.panel{grid-column:1/-1;position:static}.cart{grid-template-columns:1fr}}
 @media(max-width:640px){.pd{grid-template-columns:1fr;gap:20px}.search{display:none}.ic:first-of-type{margin-left:auto}.brand b{font-size:20px}}
+
+.opn .or{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1.1fr) auto;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:8px}
+.opn .or.done{border-color:var(--gold);box-shadow:0 0 0 1px rgba(196,162,93,.4)}
+.opn h5{font-size:14px;font-weight:600;margin-bottom:3px}.opn small{color:var(--mut);font-size:11px;line-height:1.6}
+.opn .fg{display:flex;gap:18px;font-size:11px;color:var(--mut)}.opn .fg b{display:block;font-size:17px;color:var(--fg);font-weight:600}
+.opn .ct{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.opn .ct .in{width:76px;text-align:center;font-size:16px;font-weight:600;height:38px}
+.opn .ct .s{width:38px;height:38px;border:1px solid var(--line);border-radius:10px;font-size:18px;background:var(--card)}
+.opn .bar{height:5px;border-radius:99px;background:var(--soft);margin:12px 0 8px;overflow:hidden}.opn .bar i{display:block;height:100%;background:var(--gold);transition:width .25s}
+.pill{font-size:11px;border-radius:99px;padding:4px 11px;white-space:nowrap;font-weight:600}
+.pill.ok{background:rgba(46,125,50,.15);color:#2e7d32}.pill.kr{background:rgba(192,57,43,.15);color:#c0392b}.pill.ls{background:rgba(196,162,93,.22);color:var(--gt)}
+@media(max-width:760px){.opn .or{grid-template-columns:1fr}.opn .ct{justify-content:flex-start}}
+@media print{body *{visibility:hidden}.opn,.opn *{visibility:visible}.opn{position:absolute;left:0;top:0;width:100%}.noprint{display:none!important}.opn .or{break-inside:avoid;box-shadow:none}}
