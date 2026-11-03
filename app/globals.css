@@ -72,3 +72,6 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:30px 5vw 50px;b
 .pill.ok{background:rgba(46,125,50,.15);color:#2e7d32}.pill.kr{background:rgba(192,57,43,.15);color:#c0392b}.pill.ls{background:rgba(196,162,93,.22);color:var(--gt)}
 @media(max-width:760px){.opn .or{grid-template-columns:1fr}.opn .ct{justify-content:flex-start}}
 @media print{body *{visibility:hidden}.opn,.opn *{visibility:visible}.opn{position:absolute;left:0;top:0;width:100%}.noprint{display:none!important}.opn .or{break-inside:avoid;box-shadow:none}}
+/* Foto produk: tampil utuh, bentuk potret */
+.img,.main,.th{aspect-ratio:4/5}
+.img img,.main img,.th img,.im img,.pv img{object-fit:contain}
