@@ -134,7 +134,7 @@ function LogList({log}){
 }
 
 function Row({p,reload}){
-  const [v,setV]=useState(p),[busy,setBusy]=useState(false),[msg,setMsg]=useState(''),[sel,setSel]=useState(0),[nc,setNc]=useState({n:'',a:'#c4a25d',b:'#111111',m:false});
+  const [v,setV]=useState(p),[busy,setBusy]=useState(false),[sel,setSel]=useState(0),[nc,setNc]=useState({n:'',a:'#c4a25d',b:'#111111',m:false});
   const set=(k,x)=>setV(o=>({...o,[k]:x}));
   async function up(files){
     for(const f of [...files].slice(0,Math.max(0,4-v.images.length))){
@@ -146,8 +146,8 @@ function Row({p,reload}){
   }
   async function save(){
     setBusy(true);
-    try{await api('/api/products?id='+p.id,'PATCH',{name:v.name,category:v.category,price:+v.price,stock:+v.stock,description:v.description,bg:v.bg,images:v.images,colors:v.colors,location:v.location||''});await reload();setMsg('Tersimpan ✓ ('+v.images.length+' foto) '+new Date().toLocaleTimeString('id-ID'))}
-    catch(e){setMsg('GAGAL: '+e.message);alert(e.message)}
+    try{await api('/api/products?id='+p.id,'PATCH',{name:v.name,category:v.category,price:+v.price,stock:+v.stock,description:v.description,bg:v.bg,images:v.images,colors:v.colors,location:v.location||''});await reload()}
+    catch(e){alert(e.message)}
     setBusy(false);
   }
   async function del(){if(confirm('Hapus barang ini dari toko?')){await api('/api/products?id='+p.id,'DELETE');reload()}}
@@ -179,8 +179,6 @@ function Row({p,reload}){
     <textarea className="in" style={{flex:'1 1 100%',width:'100%',minHeight:56,fontFamily:'inherit'}} placeholder="Deskripsi produk" value={v.description} onChange={e=>set('description',e.target.value)}/>
     <button className="b1" style={{width:'auto',margin:0,padding:'10px 28px'}} onClick={save}>{busy?'Menyimpan…':'Simpan Perubahan'}</button>
     <button style={{color:'#c0392b',fontSize:13}} onClick={del}>Hapus Barang</button>
-    {msg&&<span style={{fontSize:13,color:msg.startsWith('GAGAL')?'#c0392b':'#2e7d4f'}}>{msg}</span>}
-    <a href={'/produk?id='+p.id} target="_blank" rel="noreferrer" style={{fontSize:13,color:'var(--gt)'}}>Lihat di toko ↗</a>
   </div>);
 }
 
