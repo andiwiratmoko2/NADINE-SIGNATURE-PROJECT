@@ -2,6 +2,8 @@ import {notFound} from 'next/navigation';
 import {sql} from '@/lib/db';
 import {ProductView} from '@/components/ui';
 export const dynamic='force-dynamic';
+export const revalidate=0;
+export const fetchCache='force-no-store';
 export default async function Page({searchParams}){
   let p;
   try{[p]=await sql`SELECT * FROM products WHERE id=${+searchParams.id} AND NOT hidden`}catch{}

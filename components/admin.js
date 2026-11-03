@@ -134,20 +134,20 @@ function LogList({log}){
 }
 
 function Row({p,reload}){
-  const [v,setV]=useState(p),[busy,setBusy]=useState(false),[sel,setSel]=useState(0),[nc,setNc]=useState({n:'',a:'#c4a25d',b:'#111111',m:false});
+  const [v,setV]=useState(p),[busy,setBusy]=useState(false),[msg,setMsg]=useState(''),[sel,setSel]=useState(0),[nc,setNc]=useState({n:'',a:'#c4a25d',b:'#111111',m:false});
   const set=(k,x)=>setV(o=>({...o,[k]:x}));
   async function up(files){
     for(const f of [...files].slice(0,Math.max(0,4-v.images.length))){
       const fd=new FormData();fd.append('file',await shrink(f),'foto.jpg');
-      const r=await fetch('/api/upload',{method:'POST',body:fd}),d=await r.json();
+      const r=await fetch('/api/upload?id='+p.id,{method:'POST',body:fd}),d=await r.json();
       if(!r.ok)return alert(d.error);
-      setV(o=>({...o,images:[...o.images,d.url].slice(0,4)}));
+      setV(o=>({...o,images:[...o.images,d.url].slice(0,4)}));setMsg(d.n==null?'Foto terunggah, tekan Simpan Perubahan':'Foto tersimpan di database ✓ ('+d.n+' foto)');
     }
   }
   async function save(){
     setBusy(true);
-    try{await api('/api/products?id='+p.id,'PATCH',{name:v.name,category:v.category,price:+v.price,stock:+v.stock,description:v.description,bg:v.bg,images:v.images,colors:v.colors,location:v.location||''});await reload()}
-    catch(e){alert(e.message)}
+    try{await api('/api/products?id='+p.id,'PATCH',{name:v.name,category:v.category,price:+v.price,stock:+v.stock,description:v.description,bg:v.bg,images:v.images,colors:v.colors,location:v.location||''});await reload();setMsg('Tersimpan ✓ ('+v.images.length+' foto) '+new Date().toLocaleTimeString('id-ID'))}
+    catch(e){setMsg('GAGAL: '+e.message);alert(e.message)}
     setBusy(false);
   }
   async function del(){if(confirm('Hapus barang ini dari toko?')){await api('/api/products?id='+p.id,'DELETE');reload()}}
@@ -179,6 +179,8 @@ function Row({p,reload}){
     <textarea className="in" style={{flex:'1 1 100%',width:'100%',minHeight:56,fontFamily:'inherit'}} placeholder="Deskripsi produk" value={v.description} onChange={e=>set('description',e.target.value)}/>
     <button className="b1" style={{width:'auto',margin:0,padding:'10px 28px'}} onClick={save}>{busy?'Menyimpan…':'Simpan Perubahan'}</button>
     <button style={{color:'#c0392b',fontSize:13}} onClick={del}>Hapus Barang</button>
+    {msg&&<span style={{fontSize:13,color:msg.startsWith('GAGAL')?'#c0392b':'#2e7d4f'}}>{msg}</span>}
+    <a href={'/produk?id='+p.id} target="_blank" rel="noreferrer" style={{fontSize:13,color:'var(--gt)'}}>Lihat di toko ↗</a>
   </div>);
 }
 
@@ -201,7 +203,7 @@ export default function Admin(){
   const stl=d.products.filter(stale).length,go=id=>document.getElementById(id)?.scrollIntoView({behavior:'smooth'});
   const rev=d.orders.filter(o=>o.status=='Lunas'||o.status=='Dikirim').reduce((s,o)=>s+o.total,0),wait=d.orders.filter(o=>o.status=='Menunggu Konfirmasi').length;
   return(<div className="wrap" style={{paddingBottom:60}}>
-    <div className="crumb">Dasbor Penjual <a style={{float:'right',cursor:'pointer'}} onClick={async()=>{await api('/api/logout','POST');setD(false)}}>Keluar</a></div>
+    <div className="crumb">Dasbor Penjual · versi 2 <a style={{float:'right',cursor:'pointer'}} onClick={async()=>{await api('/api/logout','POST');setD(false)}}>Keluar</a></div>
     <div className="st">{[['Terjual',sold+' pcs'],['Pendapatan',rp(rev)],['Total Stok',stock+' pcs'],['Menunggu Konfirmasi',wait],['Belum Dihitung (30 hari)',stl+' barang']].map(x=><div className="box" key={x[0]}><small style={{color:'var(--mut)'}}>{x[0]}</small><br/><b style={{fontSize:20}}>{x[1]}</b></div>)}</div>
 
     <div className="tabs" style={{marginTop:16,paddingBottom:0}}>{[['stok','Stock Taking'],['rek','Rekening'],['barang','Barang & Stok'],['pesanan','Pesanan'],['jual','Riwayat Penjualan'],['riwayat','Riwayat Stock Taking']].map(x=><button key={x[0]} onClick={()=>go(x[0])}>{x[1]}</button>)}</div>

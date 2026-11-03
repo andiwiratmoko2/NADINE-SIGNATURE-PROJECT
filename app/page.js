@@ -1,6 +1,8 @@
 import {sql} from '@/lib/db';
 import {Shop} from '@/components/ui';
 export const dynamic='force-dynamic';
+export const revalidate=0;
+export const fetchCache='force-no-store';
 export default async function Home({searchParams}){
   let ps=[],fail=false;
   try{ps=await sql`SELECT id,name,category,price,stock,bg,images FROM products WHERE NOT hidden ORDER BY id`}catch{fail=true}
